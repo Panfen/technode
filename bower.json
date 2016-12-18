@@ -1,0 +1,24 @@
+{
+  "name": "technode",
+  "description": "",
+  "main": "index.js",
+  "authors": [
+    "panfen"
+  ],
+  "license": "ISC",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "static/components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "angular": "^1.6.0",
+    "jquery": "^3.1.1",
+    "bootstrap": "^3.3.7",
+    "angular-route": "^1.6.0"
+  }
+}

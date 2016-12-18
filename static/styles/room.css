@@ -1,0 +1,24 @@
+.navbar{
+	color:#fff;
+	background: #000;
+	position: relative;
+}
+.navbar-header{
+	width: 100%;
+}
+.container-body{
+	margin-top:100px;
+}
+.navbar-collapse{
+	width:120px;
+}
+img.user-header{
+	width:40px;
+	height: 40px;
+	margin-top: 5px;
+	border-radius: 20px;
+}
+.form-enter{
+	width:285px;
+	margin:80px auto;
+}
