@@ -35,9 +35,11 @@ app.get('/api/validate',function(req,res){
 	if(_userId){
 		Controllers.User.findUserById(_userId,function(err,user){
 			if(err){
+				/*
 				res.json(401,{
 					msg:err
 				});
+				*/
 			}else{
 				res.json(user);
 			}
@@ -57,7 +59,13 @@ app.post('/api/login',function(req,res){
 				})
 			}else{
 				req.session._userId = user._id;
-				res.json(user);
+				Controllers.User.online(user._id,function(err,user){
+					if (err) {
+						res.json(500,{msg:err});
+					}else{
+						res.json(user);
+					}
+				});
 			}
 		});
 	}else{
@@ -66,8 +74,17 @@ app.post('/api/login',function(req,res){
 })
 
 app.post('/api/logout',function(req,res){
-	req.session._userId = null;
-	res.json(401);
+	_userId = req.session._userId;
+	Controllers.User.offline(_userId,function(err,user){
+		if(err){
+			res.json(500,{
+				msg:err
+			});
+		}else{
+			res.json(200);
+			delete req.session._userId;
+		}
+	});
 })
 
 app.use(function(req,res){
@@ -103,8 +120,19 @@ io.set('authorization',function(handshakeData,accept){
 
 var messages = [];
 io.sockets.on('connection',function(socket){
-	socket.on('getAllMessages',function(){
-		socket.emit('allMessages',messages);
+	socket.on('getRoom',function(){
+		Controllers.User.getOnlineUsers(function(err,users){
+			if(err){
+				socket.emit('err',{
+					msg:err
+				});
+			}else{
+				socket.emit('roomData',{
+					users: users,
+					messages:messages
+				});
+			}
+		});
 	});
 	socket.on('createMessage',function(message){
 		messages.push(message);
