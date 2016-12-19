@@ -31,15 +31,14 @@ app.use(session({
 app.use(express.static(path.join(__dirname,'/static')));
 
 app.get('/api/validate',function(req,res){
+	console.log("验证:"+JSON.stringify(req.session));
 	var _userId = req.session._userId;
 	if(_userId){
 		Controllers.User.findUserById(_userId,function(err,user){
 			if(err){
-				/*
 				res.json(401,{
 					msg:err
 				});
-				*/
 			}else{
 				res.json(user);
 			}
@@ -73,7 +72,7 @@ app.post('/api/login',function(req,res){
 	}
 })
 
-app.post('/api/logout',function(req,res){
+app.get('/api/logout',function(req,res){
 	_userId = req.session._userId;
 	Controllers.User.offline(_userId,function(err,user){
 		if(err){
@@ -83,6 +82,7 @@ app.post('/api/logout',function(req,res){
 		}else{
 			res.json(200);
 			delete req.session._userId;
+			console.log("s删除后:"+JSON.stringify(req.session));
 		}
 	});
 })
@@ -107,6 +107,7 @@ io.set('authorization',function(handshakeData,accept){
 					accept(err.message,false);
 				}else{
 					handshakeData.session = session;
+					console.log("session:"+JSON.stringify(handshakeData.session))
 					if(session._userId){
 						accept(null,true);
 					}else{
@@ -118,24 +119,60 @@ io.set('authorization',function(handshakeData,accept){
 	});
 });
 
-var messages = [];
 io.sockets.on('connection',function(socket){
+	var _userId = socket.request.session._userId;
+	Controllers.User.online(_userId,function(err,user){
+		if(err){
+			socket.emit('err',{
+				msg:err
+			});
+		}else{
+			socket.broadcast.emit('online',user);
+		}
+	});
+	socket.on('disconnect',function(){
+		Controllers.User.offline(_userId,function(err,user){
+			if(err){
+				socket.emit('err',{
+					msg:err
+				});
+			}else{
+				socket.broadcast.emit('offline',user);
+			}
+		});
+	});
+
 	socket.on('getRoom',function(){
-		Controllers.User.getOnlineUsers(function(err,users){
+		async.parallel([
+			function(done){
+				Controllers.User.getOnlineUsers(done);
+			},
+			function(done){
+				Controllers.Message.read(done);
+			}
+		],
+		function(err,results){
 			if(err){
 				socket.emit('err',{
 					msg:err
 				});
 			}else{
 				socket.emit('roomData',{
-					users: users,
-					messages:messages
+					users: results[0],
+					messages:results[1]
 				});
 			}
 		});
 	});
 	socket.on('createMessage',function(message){
-		messages.push(message);
-		io.sockets.emit('messageAdded',message);
+		Controllers.Message.create(message,function(err,message){
+			if(err){
+				socket.emit('err',{
+					msg:err
+				});
+			}else{
+				io.sockets.emit('messageAdded',message);
+			}
+		});
 	});
 });
