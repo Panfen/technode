@@ -10,6 +10,7 @@ var Message = new Schema({
 		email:String,
 		name:String
 	},
+	_roomId:ObjectId,
 	createAt:{
 		type:Date,
 		default:Date.now

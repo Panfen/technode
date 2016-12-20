@@ -1,3 +1,8 @@
+/*format*/
+ul,li{
+	list-style: none;
+}
+/*system*/
 .navbar{
 	color:#fff;
 	background: #000;
@@ -21,4 +26,18 @@ img.user-header{
 .form-enter{
 	width:304px;
 	margin:80px auto;
+}
+.room-item{
+	border:1px solid #ccc;
+	border-top: none;
+	padding:10px;
+}
+.room-item:first-child{
+	border-top: 1px solid #ccc;
+}
+.avatar-list-box{
+	display: inline-block;
+}
+.room-user{
+	margin-right: 10px;
 }

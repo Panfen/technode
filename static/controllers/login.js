@@ -8,7 +8,7 @@ angular.module('technodeApp').controller('LoginCtrl',function($scope,$http,$loca
 			}
 		}).then(function(user){
 			$scope.$emit('login',user);
-			$location.path('/');
+			$location.path('/rooms');
 		},function(data){
 			$location.path('/login');
 		});

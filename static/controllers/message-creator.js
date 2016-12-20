@@ -5,7 +5,8 @@ angular.module('technodeApp').controller('MesssageCreatorCtrl',function($scope,s
 		}
 		socket.emit('createMessage',{
 			content:$scope.newMessage,
-			creator:$scope.me.data
+			creator:$scope.me.data,
+			_roomId:$scope.room._id
 		});
 		$scope.newMessage = '';
 	};

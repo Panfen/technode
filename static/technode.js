@@ -4,9 +4,10 @@ angular.module('technodeApp',['ngRoute']).run(function($window,$rootScope,$http,
 		method:'GET'
 	}).then(function successCallback(user){
 		$rootScope.me = user;
-		$location.path('/');
-		console.log('validate')
+		$rootScope.my = user;
+		$location.path('/rooms');
 	},function errorCallback(data){
+		$rootScope.me = null;
 		$location.path('/login');
 	});
 	$rootScope.logout = function(){
@@ -20,7 +21,6 @@ angular.module('technodeApp',['ngRoute']).run(function($window,$rootScope,$http,
 		});
 	}
 	$rootScope.$on('login',function(evt,me){
-		console.log('login')
 		$rootScope.me = me;
 	});
 });
