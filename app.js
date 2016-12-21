@@ -33,18 +33,15 @@ app.use(express.static(path.join(__dirname,'/static')));
 
 app.get('/api/validate',function(req,res){
 	var _userId = req.session._userId;
+	console.log('_userId:'+_userId)
 	if(_userId){
 		Controllers.User.findUserById(_userId,function(err,user){
-			if(user.online == true){
-				if(err){
-					res.json(401,{
-						msg:err
-					});
-				}else{
-					res.json(user);
-				}
+			if(err){
+				res.json(401,{
+					msg:err
+				});
 			}else{
-				res.json(401,null);
+				res.json(user);
 			}
 		})
 	}else{
@@ -257,6 +254,7 @@ io.sockets.on('connection',function(socket){
 
 	//通过改变页面地质变化改变
 	socket.on('leaveRoom',function(leave){
+		console.log('leave：'+JSON.stringify(leave))
 		Controllers.User.leaveRoom(leave,function(err){
 			if(err){
 				socket.emit('err',{
