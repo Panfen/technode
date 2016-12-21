@@ -22,7 +22,7 @@
 		<div class="panel-heading user-list-header">Online Users</div>
 		<div class="panel-body user-list-content">
 			<div class="list-group users">
-				<div class="list-group-item user" ng-repeat="user in room.users">
+				<div class="list-group-item user" ng-repeat="user in room.users track by $index">
 					<img src="{{user.avatarUrl}}" title="{{user.name}}" class="img-rounded" width="60" height="60">
 				</div>
 			</div>

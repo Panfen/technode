@@ -35,12 +35,16 @@ app.get('/api/validate',function(req,res){
 	var _userId = req.session._userId;
 	if(_userId){
 		Controllers.User.findUserById(_userId,function(err,user){
-			if(err){
-				res.json(401,{
-					msg:err
-				});
+			if(user.online == true){
+				if(err){
+					res.json(401,{
+						msg:err
+					});
+				}else{
+					res.json(user);
+				}
 			}else{
-				res.json(user);
+				res.json(401,null);
 			}
 		})
 	}else{
@@ -81,8 +85,8 @@ app.get('/api/logout',function(req,res){
 			});
 		}else{
 			res.json(200);
-			req.session._userId = null;
 			delete req.session._userId;
+			req.session._userId = null;
 		}
 	});
 })
@@ -151,7 +155,7 @@ io.sockets.on('connection',function(socket){
 						createAt:new Date(),
 						_id:ObjectId()
 					});
-					Controllers.User.leaveRoom({
+					Controllers.User.leaveRoom2({
 						user:user
 					},function(){});
 				}
@@ -251,8 +255,8 @@ io.sockets.on('connection',function(socket){
 		});
 	});
 
+	//通过改变页面地质变化改变
 	socket.on('leaveRoom',function(leave){
-
 		Controllers.User.leaveRoom(leave,function(err){
 			if(err){
 				socket.emit('err',{

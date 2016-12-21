@@ -35,7 +35,7 @@ angular.module('technodeApp').controller('RoomsCtrl',function($scope,$location,s
 	socket.on('joinRoom',function(join){
 		$scope.rooms.forEach(function(room){
 			if(room._id == join.room._id){
-				room.users.push(join.user);
+				room.users.push(join.user.data);
 			}
 		});
 	});
